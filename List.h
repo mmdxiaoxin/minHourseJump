@@ -18,6 +18,9 @@ private:
 
 public:
 	List();
+	List(size_t n, const T& elem = T());
+	List(const List& other);
+	List(ListNode<T>* begin, ListNode<T>* end);
 	~List();
 	T& front();
 	const T& front() const;
@@ -43,6 +46,31 @@ public:
 
 template <typename T>
 List<T>::List() : head(nullptr), tail(nullptr), size(0) {}
+
+template <typename T>
+List<T>::List(size_t n, const T& elem) : head(nullptr), tail(nullptr), size(0) {
+	for (size_t i = 0; i < n; i++) {
+		push_back(elem);
+	}
+}
+
+template <typename T>
+List<T>::List(const List& other) : head(nullptr), tail(nullptr), size(0) {
+	ListNode<T>* current = other.head;
+	while (current != nullptr) {
+		push_back(current->data);
+		current = current->next;
+	}
+}
+
+template <typename T>
+List<T>::List(ListNode<T>* begin, ListNode<T>* end) : head(nullptr), tail(nullptr), size(0) {
+	ListNode<T>* current = begin;
+	while (current != end) {
+		push_back(current->data);
+		current = current->next;
+	}
+}
 
 template <typename T>
 List<T>::~List() {
