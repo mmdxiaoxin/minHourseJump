@@ -93,9 +93,9 @@ int main() {
 		// 输出 json 格式的路径
 		json json_path;
 		for (const auto& pos : path) {
-			json_path.push_back({ pos.x, pos.y });
+			json_path.push_back({ {"x", pos.x}, {"y", pos.y} });
 		}
-		json result = { {"minJumps", path.size() - 1}, {"path", json_path} };
+		json result = { {"minJumps", path.size() - 1}, {"start", {{"x", start.x}, {"y", start.y}}}, {"target", {{"x", target.x}, {"y", target.y}}}, {"path", json_path} };
 		cout << result.dump() << endl;
 	}
 
