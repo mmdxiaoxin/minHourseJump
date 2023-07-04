@@ -1,4 +1,5 @@
 #pragma once
+
 template <typename T>
 class ListNode {
 public:
@@ -7,6 +8,7 @@ public:
 	ListNode* next;
 
 	ListNode(const T& val) : data(val), prev(nullptr), next(nullptr) {}
+	ListNode() : prev(nullptr), next(nullptr) {}
 };
 
 template <typename T>
@@ -14,14 +16,17 @@ class List {
 private:
 	ListNode<T>* head;
 	ListNode<T>* tail;
-	size_t size;
+	size_t size_;
 
 public:
 	List();
 	List(size_t n, const T& elem = T());
 	List(const List& other);
+	List(List&& other);
 	List(ListNode<T>* begin, ListNode<T>* end);
 	~List();
+	List& operator=(const List& other);
+	List& operator=(List&& other);
 	T& front();
 	const T& front() const;
 	T& back();
@@ -29,7 +34,6 @@ public:
 	ListNode<T>* begin();
 	const ListNode<T>* begin() const;
 	ListNode<T>* end();
-	const ListNode<T>* end() const;
 	void push_back(const T& val);
 	void push_front(const T& val);
 	void insert(ListNode<T>* pos, const T& val);
@@ -45,17 +49,17 @@ public:
 };
 
 template <typename T>
-List<T>::List() : head(nullptr), tail(nullptr), size(0) {}
+List<T>::List() : head(nullptr), tail(nullptr), size_(0) {}
 
 template <typename T>
-List<T>::List(size_t n, const T& elem) : head(nullptr), tail(nullptr), size(0) {
+List<T>::List(size_t n, const T& elem) : head(nullptr), tail(nullptr), size_(0) {
 	for (size_t i = 0; i < n; i++) {
 		push_back(elem);
 	}
 }
 
 template <typename T>
-List<T>::List(const List& other) : head(nullptr), tail(nullptr), size(0) {
+List<T>::List(const List& other) : head(nullptr), tail(nullptr), size_(0) {
 	ListNode<T>* current = other.head;
 	while (current != nullptr) {
 		push_back(current->data);
@@ -64,7 +68,14 @@ List<T>::List(const List& other) : head(nullptr), tail(nullptr), size(0) {
 }
 
 template <typename T>
-List<T>::List(ListNode<T>* begin, ListNode<T>* end) : head(nullptr), tail(nullptr), size(0) {
+List<T>::List(List&& other) : head(other.head), tail(other.tail), size_(other.size_) {
+	other.head = nullptr;
+	other.tail = nullptr;
+	other.size_ = 0;
+}
+
+template <typename T>
+List<T>::List(ListNode<T>* begin, ListNode<T>* end) : head(nullptr), tail(nullptr), size_(0) {
 	ListNode<T>* current = begin;
 	while (current != end) {
 		push_back(current->data);
@@ -75,6 +86,42 @@ List<T>::List(ListNode<T>* begin, ListNode<T>* end) : head(nullptr), tail(nullpt
 template <typename T>
 List<T>::~List() {
 	clear();
+}
+
+template <typename T>
+List<T>& List<T>::operator=(const List& other) {
+	if (this == &other) {
+		return *this; // 处理自我赋值
+	}
+
+	clear();
+
+	ListNode<T>* current = other.head;
+	while (current != nullptr) {
+		push_back(current->data);
+		current = current->next;
+	}
+
+	return *this;
+}
+
+template <typename T>
+List<T>& List<T>::operator=(List&& other) {
+	if (this == &other) {
+		return *this; // 处理自我赋值
+	}
+
+	clear();
+
+	head = other.head;
+	tail = other.tail;
+	size_ = other.size_;
+
+	other.head = nullptr;
+	other.tail = nullptr;
+	other.size_ = 0;
+
+	return *this;
 }
 
 template <typename T>
@@ -113,11 +160,6 @@ ListNode<T>* List<T>::end() {
 }
 
 template <typename T>
-const ListNode<T>* List<T>::end() const {
-	return nullptr;
-}
-
-template <typename T>
 void List<T>::push_back(const T& val) {
 	ListNode<T>* newNode = new ListNode<T>(val);
 	if (head == nullptr) {
@@ -127,7 +169,7 @@ void List<T>::push_back(const T& val) {
 		tail->next = newNode;
 		tail = newNode;
 	}
-	size++;
+	size_++;
 }
 
 template <typename T>
@@ -140,7 +182,7 @@ void List<T>::push_front(const T& val) {
 		head->prev = newNode;
 		head = newNode;
 	}
-	size++;
+	size_++;
 }
 
 template <typename T>
@@ -161,7 +203,7 @@ void List<T>::insert(ListNode<T>* pos, const T& val) {
 	pos->prev->next = newNode;
 	pos->prev = newNode;
 
-	size++;
+	size_++;
 }
 
 template <typename T>
@@ -190,7 +232,7 @@ void List<T>::pop_back() {
 			head = nullptr;
 		}
 		delete temp;
-		size--;
+		size_--;
 	}
 }
 
@@ -205,7 +247,7 @@ void List<T>::pop_front() {
 			tail = nullptr;
 		}
 		delete temp;
-		size--;
+		size_--;
 	}
 }
 
@@ -222,7 +264,7 @@ void List<T>::erase(ListNode<T>* begin, ListNode<T>* end) {
 			temp->prev->next = temp->next;
 			temp->next->prev = temp->prev;
 			delete temp;
-			size--;
+			size_--;
 		}
 	}
 }
@@ -242,7 +284,7 @@ void List<T>::erase(const T& val) {
 				temp->prev->next = temp->next;
 				temp->next->prev = temp->prev;
 				delete temp;
-				size--;
+				size_--;
 			}
 		}
 	}
@@ -257,15 +299,15 @@ void List<T>::clear() {
 		delete temp;
 	}
 	head = tail = nullptr;
-	size = 0;
+	size_ = 0;
 }
 
 template <typename T>
 size_t List<T>::size() const {
-	return size;
+	return size_;
 }
 
 template <typename T>
 bool List<T>::empty() const {
-	return size == 0;
+	return size_ == 0;
 }

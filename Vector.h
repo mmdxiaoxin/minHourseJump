@@ -1,4 +1,5 @@
 #pragma once
+
 template<typename T>
 class Vector {
 private:
@@ -10,11 +11,14 @@ public:
 	Vector();
 	Vector(size_t n, const T& elem = T());
 	Vector(const Vector& other);
+	Vector(Vector&& other);
 	Vector(T* begin, T* end);
 	~Vector();
 	size_t capacity() const;
 	size_t size() const;
 	T& operator[](int idx);
+	Vector<T>& operator=(const Vector& other);
+	Vector<T>& operator=(Vector&& other);
 	void push_back(const T& elem);
 	void pop_back();
 	T& front();
@@ -82,6 +86,51 @@ T& Vector<T>::operator[](int idx) {
 	}
 	return data[idx];
 }
+
+template<typename T>
+Vector<T>& Vector<T>::operator=(const Vector& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	delete[] data;
+	capacity_ = other.size_;
+	size_ = other.size_;
+	data = new T[capacity_];
+	for (size_t i = 0; i < size_; ++i) {
+		data[i] = other.data[i];
+	}
+
+	return *this;
+}
+
+template<typename T>
+Vector<T>::Vector(Vector&& other) : data(other.data), capacity_(other.capacity_), size_(other.size_) {
+	other.data = nullptr;
+	other.capacity_ = 0;
+	other.size_ = 0;
+}
+
+// Also, define the move assignment operator
+template<typename T>
+Vector<T>& Vector<T>::operator=(Vector&& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	delete[] data;
+
+	data = other.data;
+	capacity_ = other.capacity_;
+	size_ = other.size_;
+
+	other.data = nullptr;
+	other.capacity_ = 0;
+	other.size_ = 0;
+
+	return *this;
+}
+
 
 template<typename T>
 void Vector<T>::push_back(const T& elem) {
