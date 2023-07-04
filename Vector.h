@@ -17,6 +17,7 @@ public:
 	size_t capacity() const;
 	size_t size() const;
 	T& operator[](int idx);
+	const T& operator[](int idx) const;
 	Vector<T>& operator=(const Vector& other);
 	Vector<T>& operator=(Vector&& other);
 	void push_back(const T& elem);
@@ -81,6 +82,14 @@ size_t Vector<T>::size() const {
 
 template<typename T>
 T& Vector<T>::operator[](int idx) {
+	if (idx < 0 || idx >= size_) {
+		throw std::out_of_range("Index out of range");
+	}
+	return data[idx];
+}
+
+template<typename T>
+const T& Vector<T>::operator[](int idx) const {
 	if (idx < 0 || idx >= size_) {
 		throw std::out_of_range("Index out of range");
 	}
