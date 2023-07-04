@@ -24,14 +24,13 @@ bool isValid(int x, int y) {
     return (x >= 1 && x <= BOARD_SIZE && y >= 1 && y <= BOARD_SIZE);
 }
 
-// 计算马从当前位置到目标位置的最少跳数，并返回路径
+// 使用广度优先搜索来计算最少跳数
 Vector<Position> minJumps(Position start, Position target) {
     // 初始化棋盘和跳数
     Vector<Vector<int>> board(BOARD_SIZE + 1, Vector<int>(BOARD_SIZE + 1, -1));
     Vector<Vector<Position>> parent(BOARD_SIZE + 1, Vector<Position>(BOARD_SIZE + 1, {-1, -1}));
     board[start.x][start.y] = 0;
 
-    // 使用广度优先搜索来计算最少跳数
     Queue<Position> q;
     q.push(start);
 
@@ -76,10 +75,10 @@ int main() {
 
     Vector<Position> path = minJumps(start, target);
     if (path.empty()) {
-        cout << "No path found." << endl;
+        cout << "没有找到路径." << endl;
     } else {
-        cout << "Minimum jumps required: " << path.size() - 1 << endl;
-        cout << "Path: ";
+        cout << "最少跳数: " << path.size() - 1 << endl;
+        cout << "路径: ";
         for (int i = path.size() - 1; i >= 0; i--) {
             cout << "(" << path[i].x << ", " << path[i].y << ")";
             if (i != 0) {
