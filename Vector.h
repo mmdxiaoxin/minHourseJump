@@ -32,6 +32,7 @@ public:
 	void insert(T* pos, Iter begin, Iter end);
 	T* erase(T* pos);
 	T* erase(T* begin, T* end);
+	bool empty() const;
 	void reverse(T* pos1, T* pos2);
 
 private:
@@ -244,6 +245,11 @@ T* Vector<T>::erase(T* begin, T* end) {
 		erase(begin);
 	}
 	return begin;
+}
+
+template<typename T>
+bool Vector<T>::empty() const {
+	return size_ == 0;
 }
 
 template<typename T>
