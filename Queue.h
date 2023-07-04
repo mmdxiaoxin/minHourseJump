@@ -1,10 +1,10 @@
 #pragma once
 #include "List.h"
 
-template <typename T, template<typename> class Container = List>
+template <typename T>
 class Queue {
 private:
-    Container<T> container;
+    List<T> container;
 
 public:
     void push(const T& val);
@@ -15,33 +15,33 @@ public:
     size_t size() const;
 };
 
-template <typename T, template<typename> class Container>
-void Queue<T, Container>::push(const T& val) {
+template <typename T>
+void Queue<T>::push(const T& val) {
     container.push_back(val);
 }
 
-template <typename T, template<typename> class Container>
-void Queue<T, Container>::pop() {
+template <typename T>
+void Queue<T>::pop() {
     container.pop_front();
 }
 
-template <typename T, template<typename> class Container>
-T& Queue<T, Container>::front() {
+template <typename T>
+T& Queue<T>::front() {
     return container.front();
 }
 
-template <typename T, template<typename> class Container>
-const T& Queue<T, Container>::front() const {
+template <typename T>
+const T& Queue<T>::front() const {
     return container.front();
 }
 
-template <typename T, template<typename> class Container>
-bool Queue<T, Container>::empty() const {
+template <typename T>
+bool Queue<T>::empty() const {
     return container.empty();
 }
 
-template <typename T, template<typename> class Container>
-size_t Queue<T, Container>::size() const {
+template <typename T>
+size_t Queue<T>::size() const {
     return container.size();
 }
 
