@@ -62,6 +62,13 @@ Vector<T>::Vector(const Vector& other) : data(nullptr), capacity_(other.size_), 
 }
 
 template<typename T>
+Vector<T>::Vector(Vector&& other) : data(other.data), capacity_(other.capacity_), size_(other.size_) {
+	other.data = nullptr;
+	other.capacity_ = 0;
+	other.size_ = 0;
+}
+
+template<typename T>
 Vector<T>::Vector(T* begin, T* end) : data(nullptr), capacity_(end - begin), size_(end - begin) {
 	data = new T[capacity_];
 	for (size_t i = 0; i < size_; ++i) {
@@ -117,14 +124,6 @@ Vector<T>& Vector<T>::operator=(const Vector& other) {
 	return *this;
 }
 
-template<typename T>
-Vector<T>::Vector(Vector&& other) : data(other.data), capacity_(other.capacity_), size_(other.size_) {
-	other.data = nullptr;
-	other.capacity_ = 0;
-	other.size_ = 0;
-}
-
-// Also, define the move assignment operator
 template<typename T>
 Vector<T>& Vector<T>::operator=(Vector&& other) {
 	if (this == &other) {
@@ -220,7 +219,13 @@ void Vector<T>::insert(T* pos, size_t n, const T& elem) {
 template<typename T>
 template<typename Iter>
 void Vector<T>::insert(T* pos, Iter begin, Iter end) {
-	size_t count = std::distance(begin, end);
+	size_t count = 0;
+	Iter it = begin;
+	while (it != end) {
+		count++;
+		++it;
+	}
+
 	for (size_t i = 0; i < count; i++) {
 		insert(pos, *begin);
 		pos++;
