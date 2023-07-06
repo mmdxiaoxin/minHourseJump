@@ -13,6 +13,7 @@ public:
 
 private:
 	int boardSize;
+	int currJumps;
 	const int dx[8] = { 1, 2, 2, 1, -1, -2, -2, -1 };
 	const int dy[8] = { 2, 1, -1, -2, -2, -1, 1, 2 };
 	Vector<Vector<bool>> visited;
@@ -23,8 +24,10 @@ public:
 	Chessboard();
 	Chessboard(int boardSize_);
 	bool isValid(int x, int y);
-	Vector<Position> minJumpsPath();
-	int minJumps();
+	Vector<Position> minJumpsPathBFS();
+	Vector<Position> feasiblePathDFS();
+	Vector<Position> backtrack(Position curr, int jumps);
+	int minJumpsBFS();
 	void solve();
 	void printChessboard(const Position& start, const Position& target, const Vector<Position>& path);
 };

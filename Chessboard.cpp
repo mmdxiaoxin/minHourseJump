@@ -1,5 +1,6 @@
 ﻿#include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <nlohmann/json.hpp>
 
 #include "Chessboard.h"
@@ -9,15 +10,15 @@
 using namespace std;
 using json = nlohmann::json;
 
-Chessboard::Chessboard() : boardSize(200) {}
+Chessboard::Chessboard() : boardSize(200), currJumps(INT_MAX) {}
 
-Chessboard::Chessboard(int boardSize_) : boardSize(boardSize_) {}
+Chessboard::Chessboard(int boardSize_) : boardSize(boardSize_), currJumps(INT_MAX) {}
 
 bool Chessboard::isValid(int x, int y) {
 	return (x >= 1 && x <= boardSize && y >= 1 && y <= boardSize);
 }
 
-Vector<Chessboard::Position> Chessboard::minJumpsPath() {
+Vector<Chessboard::Position> Chessboard::minJumpsPathBFS() {
 	Vector<Vector<int>> board(boardSize + 1, Vector<int>(boardSize + 1, -1));
 	Vector<Vector<Position>> parent(boardSize + 1, Vector<Position>(boardSize + 1, { -1, -1 }));
 	board[start.x][start.y] = 0;
@@ -54,7 +55,43 @@ Vector<Chessboard::Position> Chessboard::minJumpsPath() {
 	return Vector<Position>();
 }
 
-int Chessboard::minJumps() {
+
+Vector<Chessboard::Position> Chessboard::feasiblePathDFS() {
+	visited = Vector<Vector<bool>>(boardSize + 1, Vector<bool>(boardSize + 1, false));
+	return backtrack(start, currJumps);
+}
+
+Vector<Chessboard::Position> Chessboard::backtrack(Position curr, int jumps) {
+	if (curr.x == target.x && curr.y == target.y) {
+		Vector<Position> path;
+		path.push_back(curr);
+		return path;
+	}
+
+	if (jumps <= 0 || visited[curr.x][curr.y])
+		return Vector<Position>();
+
+	visited[curr.x][curr.y] = true;
+
+	for (int i = 0; i < 8; i++) {
+		int nextX = curr.x + dx[i];
+		int nextY = curr.y + dy[i];
+
+		if (isValid(nextX, nextY) && !visited[nextX][nextY]) {
+			Vector<Position> path = backtrack(Position(nextX, nextY), jumps - 1);
+			if (!path.empty()) {
+				path.push_back(curr);
+				return path;
+			}
+		}
+	}
+
+	visited[curr.x][curr.y] = false;
+
+	return Vector<Position>();
+}
+
+int Chessboard::minJumpsBFS() {
 	Queue<pair<Position, int>> q;
 	q.push({ start, 0 });
 	visited[start.x][start.y] = true;
@@ -93,13 +130,15 @@ void Chessboard::solve() {
 	start = Position(startX, startY);
 	target = Position(targetX, targetY);
 
-	Vector<Position> path = minJumpsPath();
+	Vector<Position> path = minJumpsPathBFS();
+	Vector<Position> path_ = feasiblePathDFS();
+
 	if (path.empty()) {
 		cout << "没有找到路径." << endl;
 	} else {
 		cout << "最少跳数: " << path.size() - 1 << endl;
 		outputFile << path.size() - 1 << endl;
-		cout << "路径: ";
+		cout << "路径: BFS";
 		for (int i = path.size() - 1; i >= 0; i--) {
 			cout << "(" << path[i].x << ", " << path[i].y << ")";
 			if (i != 0) {
@@ -108,17 +147,29 @@ void Chessboard::solve() {
 		}
 		cout << endl;
 		printChessboard(start, target, path);
+
+		cout << "一条可行路径跳数: " << path_.size() - 1 << endl;
+		cout << "路径: DFS";
+		for (int i = path_.size() - 1; i >= 0; i--) {
+			cout << "(" << path_[i].x << ", " << path_[i].y << ")";
+			if (i != 0) {
+				cout << " -> ";
+			}
+		}
+		cout << endl;
+		printChessboard(start, target, path_);
+
 		json json_path;
 		for (int i = path.size() - 1; i >= 0; i--) {
 			const auto& pos = path[i];
 			json_path.push_back({ {"x", pos.x}, {"y", pos.y} });
 		}
-		json result = { {"minJumps", path.size() - 1}, 
-			{"start", {{"x", start.x}, {"y", start.y}}}, 
-			{"target", {{"x", target.x}, {"y", target.y}}}, 
-			{"path", json_path}, 
-			{"boardSize", boardSize}};
-		cout << "转换为JSON格式为: " << endl;
+		json result = { {"minJumps", path.size() - 1},
+			{"start", {{"x", start.x}, {"y", start.y}}},
+			{"target", {{"x", target.x}, {"y", target.y}}},
+			{"path", json_path},
+			{"boardSize", boardSize} };
+		cout << "转换最短路径为JSON格式为: " << endl;
 		cout << result.dump() << endl;
 		outputJson << result.dump() << endl;
 	}
@@ -151,7 +202,7 @@ void Chessboard::printChessboard(const Position& start, const Position& target, 
 			} else if (chessboard[i][j] == 0) {
 				cout << "  ";
 			} else {
-				cout << " " << chessboard[i][j];
+				cout << setw(2) << chessboard[i][j];
 			}
 			cout << "|";
 		}
