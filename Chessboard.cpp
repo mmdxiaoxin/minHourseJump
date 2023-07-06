@@ -95,11 +95,11 @@ void Chessboard::solve() {
 
 	Vector<Position> path = minJumpsPath();
 	if (path.empty()) {
-		cout << "Ã»ÓÐÕÒµ½Â·¾¶." << endl;
+		cout << "æ²¡æœ‰æ‰¾åˆ°è·¯å¾„." << endl;
 	} else {
-		cout << "×îÉÙÌøÊý: " << path.size() - 1 << endl;
+		cout << "æœ€å°‘è·³æ•°: " << path.size() - 1 << endl;
 		outputFile << path.size() - 1 << endl;
-		cout << "Â·¾¶: ";
+		cout << "è·¯å¾„: ";
 		for (int i = path.size() - 1; i >= 0; i--) {
 			cout << "(" << path[i].x << ", " << path[i].y << ")";
 			if (i != 0) {
@@ -118,7 +118,7 @@ void Chessboard::solve() {
 			{"target", {{"x", target.x}, {"y", target.y}}}, 
 			{"path", json_path}, 
 			{"boardSize", boardSize}};
-		cout << "×ª»»ÎªJSON¸ñÊ½Îª: " << endl;
+		cout << "è½¬æ¢ä¸ºJSONæ ¼å¼ä¸º: " << endl;
 		cout << result.dump() << endl;
 		outputJson << result.dump() << endl;
 	}

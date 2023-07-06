@@ -91,7 +91,7 @@ List<T>::~List() {
 template <typename T>
 List<T>& List<T>::operator=(const List& other) {
 	if (this == &other) {
-		return *this; // ´¦Àí×ÔÎÒ¸³Öµ
+		return *this; // å¤„ç†è‡ªæˆ‘èµ‹å€¼
 	}
 
 	clear();
@@ -108,7 +108,7 @@ List<T>& List<T>::operator=(const List& other) {
 template <typename T>
 List<T>& List<T>::operator=(List&& other) {
 	if (this == &other) {
-		return *this; // ´¦Àí×ÔÎÒ¸³Öµ
+		return *this; // å¤„ç†è‡ªæˆ‘èµ‹å€¼
 	}
 
 	clear();
