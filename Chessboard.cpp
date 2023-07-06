@@ -107,7 +107,7 @@ void Chessboard::solve() {
 			}
 		}
 		cout << endl;
-
+		printChessboard(start, target, path);
 		json json_path;
 		for (int i = path.size() - 1; i >= 0; i--) {
 			const auto& pos = path[i];
@@ -125,4 +125,42 @@ void Chessboard::solve() {
 	inputFile.close();
 	outputFile.close();
 	outputJson.close();
+}
+
+void Chessboard::printChessboard(const Position& start, const Position& target, const Vector<Position>& path) {
+	Vector<Vector<int>> chessboard(boardSize, Vector<int>(boardSize, 0));
+
+	for (int i = 0; i < path.size(); i++) {
+		Position pos = path[i];
+		chessboard[pos.x - 1][pos.y - 1] = path.size() - i - 1;
+	}
+
+	cout << "+";
+	for (int i = 0; i < boardSize; i++) {
+		cout << "--+";
+	}
+	cout << endl;
+
+	for (int i = 0; i < boardSize; i++) {
+		cout << "|";
+		for (int j = 0; j < boardSize; j++) {
+			if (start.x == i + 1 && start.y == j + 1) {
+				cout << " S";
+			} else if (target.x == i + 1 && target.y == j + 1) {
+				cout << " T";
+			} else if (chessboard[i][j] == 0) {
+				cout << "  ";
+			} else {
+				cout << " " << chessboard[i][j];
+			}
+			cout << "|";
+		}
+		cout << endl;
+
+		cout << "+";
+		for (int k = 0; k < boardSize; k++) {
+			cout << "--+";
+		}
+		cout << endl;
+	}
 }

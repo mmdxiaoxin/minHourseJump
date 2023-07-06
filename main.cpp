@@ -5,7 +5,7 @@
 #include "Chessboard.h"
 
 int main() {
-	Chessboard chessboard;
+	Chessboard chessboard(16);
 	chessboard.solve();
 
 	return 0;

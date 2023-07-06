@@ -26,6 +26,7 @@ public:
 	Vector<Position> minJumpsPath();
 	int minJumps();
 	void solve();
+	void printChessboard(const Position& start, const Position& target, const Vector<Position>& path);
 };
 
 
