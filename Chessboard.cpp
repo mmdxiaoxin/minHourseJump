@@ -17,7 +17,7 @@ bool Chessboard::isValid(int x, int y) {
 	return (x >= 1 && x <= boardSize && y >= 1 && y <= boardSize);
 }
 
-Vector<Chessboard::Position> Chessboard::minJumps(Position start, Position target) {
+Vector<Chessboard::Position> Chessboard::minJumpsPath() {
 	Vector<Vector<int>> board(boardSize + 1, Vector<int>(boardSize + 1, -1));
 	Vector<Vector<Position>> parent(boardSize + 1, Vector<Position>(boardSize + 1, { -1, -1 }));
 	board[start.x][start.y] = 0;
@@ -54,6 +54,34 @@ Vector<Chessboard::Position> Chessboard::minJumps(Position start, Position targe
 	return Vector<Position>();
 }
 
+int Chessboard::minJumps() {
+	Queue<pair<Position, int>> q;
+	q.push({ start, 0 });
+	visited[start.x][start.y] = true;
+
+	while (!q.empty()) {
+		Position currPos = q.front().first;
+		int currJumps = q.front().second;
+		q.pop();
+
+		if (currPos.x == target.x && currPos.y == target.y) {
+			return currJumps;
+		}
+
+		for (int i = 0; i < 8; i++) {
+			int nextX = currPos.x + dx[i];
+			int nextY = currPos.y + dy[i];
+
+			if (isValid(nextX, nextY) && !visited[nextX][nextY]) {
+				q.push({ Position(nextX, nextY), currJumps + 1 });
+				visited[nextX][nextY] = true;
+			}
+		}
+	}
+
+	return -1;
+}
+
 void Chessboard::solve() {
 	ifstream inputFile("input.txt");
 	ofstream outputFile("output.txt");
@@ -62,10 +90,10 @@ void Chessboard::solve() {
 	int startX, startY, targetX, targetY;
 	inputFile >> startX >> startY >> targetX >> targetY;
 
-	Position start(startX, startY);
-	Position target(targetX, targetY);
+	start = Position(startX, startY);
+	target = Position(targetX, targetY);
 
-	Vector<Position> path = minJumps(start, target);
+	Vector<Position> path = minJumpsPath();
 	if (path.empty()) {
 		cout << "没有找到路径." << endl;
 	} else {

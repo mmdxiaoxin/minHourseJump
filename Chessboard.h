@@ -15,15 +15,16 @@ private:
 	int boardSize;
 	const int dx[8] = { 1, 2, 2, 1, -1, -2, -2, -1 };
 	const int dy[8] = { 2, 1, -1, -2, -2, -1, 1, 2 };
+	Vector<Vector<bool>> visited;
+	Position start;
+	Position target;
 
 public:
 	Chessboard();
 	Chessboard(int boardSize_);
-
 	bool isValid(int x, int y);
-
-	Vector<Position> minJumps(Position start, Position target);
-
+	Vector<Position> minJumpsPath();
+	int minJumps();
 	void solve();
 };
 
