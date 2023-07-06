@@ -33,6 +33,9 @@ public:
 	T* erase(T* pos);
 	T* erase(T* begin, T* end);
 	bool empty() const;
+	void resize(size_t newSize);
+	template<typename U>
+	void resize(size_t newSize, const U& elem = U());
 	void reverse(T* pos1, T* pos2);
 
 private:
@@ -56,6 +59,14 @@ Vector<T>::Vector(const Vector& other) : data(nullptr), capacity_(other.size_), 
 	for (size_t i = 0; i < size_; ++i) {
 		data[i] = other.data[i];
 	}
+}
+
+
+template<typename T>
+Vector<T>::Vector(Vector&& other) : data(other.data), capacity_(other.capacity_), size_(other.size_) {
+	other.data = nullptr;
+	other.capacity_ = 0;
+	other.size_ = 0;
 }
 
 template<typename T>
@@ -114,14 +125,6 @@ Vector<T>& Vector<T>::operator=(const Vector& other) {
 	return *this;
 }
 
-template<typename T>
-Vector<T>::Vector(Vector&& other) : data(other.data), capacity_(other.capacity_), size_(other.size_) {
-	other.data = nullptr;
-	other.capacity_ = 0;
-	other.size_ = 0;
-}
-
-// Also, define the move assignment operator
 template<typename T>
 Vector<T>& Vector<T>::operator=(Vector&& other) {
 	if (this == &other) {
@@ -217,12 +220,36 @@ void Vector<T>::insert(T* pos, size_t n, const T& elem) {
 template<typename T>
 template<typename Iter>
 void Vector<T>::insert(T* pos, Iter begin, Iter end) {
-	size_t count = std::distance(begin, end);
+	size_t count = 0;
+	Iter it = begin;
+	while (it != end) {
+		count++;
+		++it;
+	}
+
 	for (size_t i = 0; i < count; i++) {
 		insert(pos, *begin);
 		pos++;
 		begin++;
 	}
+}
+
+template<typename T>
+template<typename U>
+void Vector<T>::resize(size_t newSize, const U& elem) {
+	if (newSize > size_) {
+		if (newSize > capacity_) {
+			reserve(newSize);
+		}
+		for (size_t i = size_; i < newSize; ++i) {
+			data[i] = elem;
+		}
+	} else if (newSize < size_) {
+		for (size_t i = newSize; i < size_; ++i) {
+			data[i].~T();
+		}
+	}
+	size_ = newSize;
 }
 
 template<typename T>
@@ -250,6 +277,23 @@ T* Vector<T>::erase(T* begin, T* end) {
 template<typename T>
 bool Vector<T>::empty() const {
 	return size_ == 0;
+}
+
+template<typename T>
+void Vector<T>::resize(size_t newSize) {
+	if (newSize > size_) {
+		if (newSize > capacity_) {
+			reserve(newSize);
+		}
+		for (size_t i = size_; i < newSize; ++i) {
+			data[i] = T();
+		}
+	} else if (newSize < size_) {
+		for (size_t i = newSize; i < size_; ++i) {
+			data[i].~T();
+		}
+	}
+	size_ = newSize;
 }
 
 template<typename T>
