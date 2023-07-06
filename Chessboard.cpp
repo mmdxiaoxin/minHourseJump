@@ -57,6 +57,7 @@ Vector<Chessboard::Position> Chessboard::minJumps(Position start, Position targe
 void Chessboard::solve() {
 	ifstream inputFile("input.txt");
 	ofstream outputFile("output.txt");
+	ofstream outputJson("output.json");
 
 	int startX, startY, targetX, targetY;
 	inputFile >> startX >> startY >> targetX >> targetY;
@@ -69,6 +70,7 @@ void Chessboard::solve() {
 		cout << "没有找到路径." << endl;
 	} else {
 		cout << "最少跳数: " << path.size() - 1 << endl;
+		outputFile << path.size() - 1 << endl;
 		cout << "路径: ";
 		for (int i = path.size() - 1; i >= 0; i--) {
 			cout << "(" << path[i].x << ", " << path[i].y << ")";
@@ -84,7 +86,9 @@ void Chessboard::solve() {
 		}
 		json result = { {"minJumps", path.size() - 1}, {"start", {{"x", start.x}, {"y", start.y}}}, {"target", {{"x", target.x}, {"y", target.y}}}, {"path", json_path} };
 		cout << result.dump() << endl;
+		outputJson << result.dump() << endl;
 	}
 	inputFile.close();
 	outputFile.close();
+	outputJson.close();
 }
