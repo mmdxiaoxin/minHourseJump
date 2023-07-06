@@ -4,8 +4,6 @@
 #include "Queue.h"
 #include "Chessboard.h"
 
-
-
 int main() {
 	Chessboard chessboard;
 	chessboard.solve();

@@ -109,10 +109,16 @@ void Chessboard::solve() {
 		cout << endl;
 
 		json json_path;
-		for (const auto& pos : path) {
+		for (int i = path.size() - 1; i >= 0; i--) {
+			const auto& pos = path[i];
 			json_path.push_back({ {"x", pos.x}, {"y", pos.y} });
 		}
-		json result = { {"minJumps", path.size() - 1}, {"start", {{"x", start.x}, {"y", start.y}}}, {"target", {{"x", target.x}, {"y", target.y}}}, {"path", json_path} };
+		json result = { {"minJumps", path.size() - 1}, 
+			{"start", {{"x", start.x}, {"y", start.y}}}, 
+			{"target", {{"x", target.x}, {"y", target.y}}}, 
+			{"path", json_path}, 
+			{"boardSize", boardSize}};
+		cout << "转换为JSON格式为: " << endl;
 		cout << result.dump() << endl;
 		outputJson << result.dump() << endl;
 	}
