@@ -1,6 +1,7 @@
 ﻿#include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <chrono>
 #include <nlohmann/json.hpp>
 
 #include "Chessboard.h"
@@ -18,7 +19,7 @@ bool Chessboard::isValid(int x, int y) {
 	return (x >= 1 && x <= boardSize && y >= 1 && y <= boardSize);
 }
 
-Vector<Chessboard::Position> Chessboard::minJumpsPathBFS() {
+Vector<Chessboard::Position> Chessboard::optimalPathBFS() {
 	Vector<Vector<int>> board(boardSize + 1, Vector<int>(boardSize + 1, -1));
 	Vector<Vector<Position>> parent(boardSize + 1, Vector<Position>(boardSize + 1, { -1, -1 }));
 	board[start.x][start.y] = 0;
@@ -59,6 +60,46 @@ Vector<Chessboard::Position> Chessboard::minJumpsPathBFS() {
 Vector<Chessboard::Position> Chessboard::feasiblePathDFS() {
 	visited = Vector<Vector<bool>>(boardSize + 1, Vector<bool>(boardSize + 1, false));
 	return backtrack(start, currJumps);
+}
+
+Vector<Chessboard::Position> Chessboard::branchBoundPath() {
+	Vector<Vector<int>> board(boardSize + 1, Vector<int>(boardSize + 1, -1));
+	Vector<Vector<Position>> parent(boardSize + 1, Vector<Position>(boardSize + 1, { -1, -1 }));
+	board[start.x][start.y] = 0;
+
+	Queue<Position> q;
+	q.push(start);
+
+	while (!q.empty()) {
+		Position curr = q.front();
+		q.pop();
+
+		if (curr.x == target.x && curr.y == target.y) {
+			Vector<Position> path;
+			while (!(curr.x == start.x && curr.y == start.y)) {
+				path.push_back(curr);
+				curr = parent[curr.x][curr.y];
+			}
+			path.push_back(start);
+			return path;
+		}
+
+		for (int i = 0; i < 8; i++) {
+			int nextX = curr.x + dx[i];
+			int nextY = curr.y + dy[i];
+
+			if (isValid(nextX, nextY) && board[nextX][nextY] == -1) {
+				int nextJump = board[curr.x][curr.y] + 1;
+				if (nextJump < board[target.x][target.y] || board[target.x][target.y] == -1) {
+					board[nextX][nextY] = nextJump;
+					parent[nextX][nextY] = curr;
+					q.push(Position(nextX, nextY));
+				}
+			}
+		}
+	}
+
+	return Vector<Position>();
 }
 
 Vector<Chessboard::Position> Chessboard::backtrack(Position curr, int jumps) {
@@ -130,35 +171,29 @@ void Chessboard::solve() {
 	start = Position(startX, startY);
 	target = Position(targetX, targetY);
 
-	Vector<Position> path = minJumpsPathBFS();
-	Vector<Position> path_ = feasiblePathDFS();
+	// 测量 optimalPathBFS() 函数的运行时间
+	auto startBFS = chrono::high_resolution_clock::now();
+	Vector<Position> path = optimalPathBFS();
+	auto endBFS = chrono::high_resolution_clock::now();
+	chrono::duration<double> durationBFS = endBFS - startBFS;
+	cout << "寻找最优解函数 optimalPathBFS() 运行时间: " << durationBFS.count() << " 秒" << endl;
+	outputFile << path.size() - 1 << endl;
+	printPath(path);
 
+	// 测量 branchBoundPath() 函数的运行时间
+	auto startBB = chrono::high_resolution_clock::now();
+	Vector<Position> path2 = branchBoundPath();
+	auto endBB = chrono::high_resolution_clock::now();
+	chrono::duration<double> durationBB = endBB - startBB;
+	cout << "寻找最优解函数 branchBoundPath() 运行时间: " << durationBB.count() << " 秒" << endl;
+	printPath(path2);
+
+	Vector<Position> path_ = feasiblePathDFS();
+	printPath(path_);
+	
 	if (path.empty()) {
 		cout << "没有找到路径." << endl;
-	} else {
-		cout << "最少跳数: " << path.size() - 1 << endl;
-		outputFile << path.size() - 1 << endl;
-		cout << "路径: BFS";
-		for (int i = path.size() - 1; i >= 0; i--) {
-			cout << "(" << path[i].x << ", " << path[i].y << ")";
-			if (i != 0) {
-				cout << " -> ";
-			}
-		}
-		cout << endl;
-		printChessboard(start, target, path);
-
-		cout << "一条可行路径跳数: " << path_.size() - 1 << endl;
-		cout << "路径: DFS";
-		for (int i = path_.size() - 1; i >= 0; i--) {
-			cout << "(" << path_[i].x << ", " << path_[i].y << ")";
-			if (i != 0) {
-				cout << " -> ";
-			}
-		}
-		cout << endl;
-		printChessboard(start, target, path_);
-
+	} else {	
 		json json_path;
 		for (int i = path.size() - 1; i >= 0; i--) {
 			const auto& pos = path[i];
@@ -213,5 +248,22 @@ void Chessboard::printChessboard(const Position& start, const Position& target, 
 			cout << "--+";
 		}
 		cout << endl;
+	}
+}
+
+void Chessboard::printPath(Vector<Position> path) {
+	if (path.empty()) {
+		cout << "没有找到路径." << endl;
+	} else {
+		cout << "跳数: " << path.size() - 1 << endl;
+		cout << "路径: ";
+		for (int i = path.size() - 1; i >= 0; i--) {
+			cout << "(" << path[i].x << ", " << path[i].y << ")";
+			if (i != 0) {
+				cout << " -> ";
+			}
+		}
+		cout << endl;
+		printChessboard(start, target, path);
 	}
 }

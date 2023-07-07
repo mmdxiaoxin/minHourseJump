@@ -24,12 +24,14 @@ public:
 	Chessboard();
 	Chessboard(int boardSize_);
 	bool isValid(int x, int y);
-	Vector<Position> minJumpsPathBFS();
+	Vector<Position> optimalPathBFS();
+	Vector<Position> branchBoundPath();
 	Vector<Position> feasiblePathDFS();
 	Vector<Position> backtrack(Position curr, int jumps);
 	int minJumpsBFS();
 	void solve();
 	void printChessboard(const Position& start, const Position& target, const Vector<Position>& path);
+	void printPath(Vector<Position> path);
 };
 
 
