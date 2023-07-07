@@ -163,7 +163,6 @@ int Chessboard::minJumpsBFS() {
 void Chessboard::solve() {
 	ifstream inputFile("input.txt");
 	ofstream outputFile("output.txt");
-	
 
 	int startX, startY, targetX, targetY;
 	inputFile >> startX >> startY >> targetX >> targetY;
@@ -189,7 +188,12 @@ void Chessboard::solve() {
 	cout << "寻找最优解函数 branchBoundPath() 运行时间: " << durationBB.count() << " 秒" << endl;
 	printPath(path2);
 
+	// 测量 feasiblePathDFS() 函数的运行时间
+	auto startDFS = chrono::high_resolution_clock::now();
 	Vector<Position> path3 = feasiblePathDFS();
+	auto endDFS = chrono::high_resolution_clock::now();
+	chrono::duration<double> durationDFS = endDFS - startDFS;
+	cout << "寻找可行解函数 feasiblePathDFS() 运行时间: " << durationDFS.count() << " 秒" << endl;
 	printPath(path3);
 	
 	inputFile.close();
@@ -232,6 +236,7 @@ void Chessboard::printChessboard(const Position& start, const Position& target, 
 		}
 		cout << endl;
 	}
+	cout << endl;
 }
 
 void Chessboard::printJson(Vector<Position> path) {
@@ -251,6 +256,7 @@ void Chessboard::printJson(Vector<Position> path) {
 			{"boardSize", boardSize} };
 		cout << "转换最短路径为JSON格式为: " << endl;
 		cout << result.dump() << endl;
+		cout << endl;
 		outputJson << result.dump() << endl;
 	}
 	outputJson.close();
