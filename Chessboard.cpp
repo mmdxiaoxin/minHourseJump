@@ -163,7 +163,7 @@ int Chessboard::minJumpsBFS() {
 void Chessboard::solve() {
 	ifstream inputFile("input.txt");
 	ofstream outputFile("output.txt");
-	ofstream outputJson("output.json");
+	
 
 	int startX, startY, targetX, targetY;
 	inputFile >> startX >> startY >> targetX >> targetY;
@@ -179,6 +179,7 @@ void Chessboard::solve() {
 	cout << "寻找最优解函数 optimalPathBFS() 运行时间: " << durationBFS.count() << " 秒" << endl;
 	outputFile << path.size() - 1 << endl;
 	printPath(path);
+	printJson(path);
 
 	// 测量 branchBoundPath() 函数的运行时间
 	auto startBB = chrono::high_resolution_clock::now();
@@ -188,29 +189,11 @@ void Chessboard::solve() {
 	cout << "寻找最优解函数 branchBoundPath() 运行时间: " << durationBB.count() << " 秒" << endl;
 	printPath(path2);
 
-	Vector<Position> path_ = feasiblePathDFS();
-	printPath(path_);
+	Vector<Position> path3 = feasiblePathDFS();
+	printPath(path3);
 	
-	if (path.empty()) {
-		cout << "没有找到路径." << endl;
-	} else {	
-		json json_path;
-		for (int i = path.size() - 1; i >= 0; i--) {
-			const auto& pos = path[i];
-			json_path.push_back({ {"x", pos.x}, {"y", pos.y} });
-		}
-		json result = { {"minJumps", path.size() - 1},
-			{"start", {{"x", start.x}, {"y", start.y}}},
-			{"target", {{"x", target.x}, {"y", target.y}}},
-			{"path", json_path},
-			{"boardSize", boardSize} };
-		cout << "转换最短路径为JSON格式为: " << endl;
-		cout << result.dump() << endl;
-		outputJson << result.dump() << endl;
-	}
 	inputFile.close();
 	outputFile.close();
-	outputJson.close();
 }
 
 void Chessboard::printChessboard(const Position& start, const Position& target, const Vector<Position>& path) {
@@ -249,6 +232,28 @@ void Chessboard::printChessboard(const Position& start, const Position& target, 
 		}
 		cout << endl;
 	}
+}
+
+void Chessboard::printJson(Vector<Position> path) {
+	ofstream outputJson("output.json");
+	if (path.empty()) {
+		cout << "没有找到路径." << endl;
+	} else {
+		json json_path;
+		for (int i = path.size() - 1; i >= 0; i--) {
+			const auto& pos = path[i];
+			json_path.push_back({ {"x", pos.x}, {"y", pos.y} });
+		}
+		json result = { {"minJumps", path.size() - 1},
+			{"start", {{"x", start.x}, {"y", start.y}}},
+			{"target", {{"x", target.x}, {"y", target.y}}},
+			{"path", json_path},
+			{"boardSize", boardSize} };
+		cout << "转换最短路径为JSON格式为: " << endl;
+		cout << result.dump() << endl;
+		outputJson << result.dump() << endl;
+	}
+	outputJson.close();
 }
 
 void Chessboard::printPath(Vector<Position> path) {
