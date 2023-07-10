@@ -32,6 +32,7 @@ public:
 	void solve();
 	void printChessboard(const Position& start, const Position& target, const Vector<Position>& path);
 	void printPath(Vector<Position> path);
+	void displayPath(Vector<Position>& path);
 	void printJson(Vector<Position> path);
 };
 

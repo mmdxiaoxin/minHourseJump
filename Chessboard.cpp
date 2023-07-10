@@ -3,12 +3,14 @@
 #include <iomanip>
 #include <chrono>
 #include <nlohmann/json.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "Chessboard.h"
 #include "Vector.h"
 #include "Queue.h"
 
 using namespace std;
+using namespace cv;
 using json = nlohmann::json;
 
 Chessboard::Chessboard() : boardSize(200), currJumps(INT_MAX) {}
@@ -178,7 +180,6 @@ void Chessboard::solve() {
 	cout << "寻找最优解函数 optimalPathBFS() 运行时间: " << durationBFS.count() << " 秒" << endl;
 	outputFile << path.size() - 1 << endl;
 	printPath(path);
-	printJson(path);
 
 	// 测量 branchBoundPath() 函数的运行时间
 	auto startBB = chrono::high_resolution_clock::now();
@@ -187,6 +188,8 @@ void Chessboard::solve() {
 	chrono::duration<double> durationBB = endBB - startBB;
 	cout << "寻找最优解函数 branchBoundPath() 运行时间: " << durationBB.count() << " 秒" << endl;
 	printPath(path2);
+	printJson(path);
+	displayPath(path);
 
 	// 测量 feasiblePathDFS() 函数的运行时间
 	auto startDFS = chrono::high_resolution_clock::now();
@@ -195,7 +198,7 @@ void Chessboard::solve() {
 	chrono::duration<double> durationDFS = endDFS - startDFS;
 	cout << "寻找可行解函数 feasiblePathDFS() 运行时间: " << durationDFS.count() << " 秒" << endl;
 	printPath(path3);
-	
+
 	inputFile.close();
 	outputFile.close();
 }
@@ -260,6 +263,80 @@ void Chessboard::printJson(Vector<Position> path) {
 		outputJson << result.dump() << endl;
 	}
 	outputJson.close();
+}
+
+void Chessboard::displayPath(Vector<Position>& path) {
+	const int Size = 15;
+	const int Menu = Size / 2;
+
+	int ROWS = boardSize;
+	int COLS = boardSize;
+
+	// 计算图像窗口的大小
+	int imgWidth = COLS * Size;
+	int imgHeight = ROWS * Size;
+
+	Mat img(imgHeight, imgWidth, CV_8UC3, Scalar(255, 255, 255));
+	Point left_up, right_bottom;
+	Point point_first, point_second;
+
+	// 中间路径点--->黄色
+	for (int i = 0; i < path.size(); i++) {
+		left_up.x = path[i].y * Size;
+		left_up.y = path[i].x * Size;
+		right_bottom.x = left_up.x + Size;
+		right_bottom.y = left_up.y + Size;
+		rectangle(img, left_up, right_bottom, Scalar(0, 255, 255), -1, 8, 0); // path yellow(full)
+	}
+
+	// 起点--->蓝色，终点--->红色
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLS; j++) {
+			left_up.x = j * Size; // 存储数组的列(j)对应矩形的x轴
+			left_up.y = i * Size;
+			right_bottom.x = left_up.x + Size;
+			right_bottom.y = left_up.y + Size;
+			if (i == start.x && j == start.y)
+				rectangle(img, left_up, right_bottom, Scalar(255, 0, 0), -1, 8, 0); // start point blue(full)
+			else if (i == target.x && j == target.y)
+				rectangle(img, left_up, right_bottom, Scalar(0, 0, 255), -1, 8, 0); // goal point red(full)
+		}
+	}
+
+	// 中间线--->黄色
+	for (int i = 1; i < COLS; i++) {
+		point_first.x = i * Size;
+		point_first.y = 1 * Size;
+		point_second.x = i * Size;
+		point_second.y = (ROWS - 1) * Size;
+		line(img, point_first, point_second, Scalar(141, 238, 238), 2, 2);
+	}
+	for (int i = 1; i < ROWS; i++) {
+		point_first.x = 1 * Size;
+		point_first.y = i * Size;
+		point_second.x = (COLS - 1) * Size;
+		point_second.y = i * Size;
+		line(img, point_first, point_second, Scalar(141, 238, 238), 2, 2);
+	}
+
+	// 路径线--->黄色
+	point_first.x = target.y * Size + Menu;
+	point_first.y = target.x * Size + Menu;
+	for (int i = 0; i < path.size(); i++) {
+		left_up.y = path[i].x * Size;
+		left_up.x = path[i].y * Size;
+		point_second.x = left_up.x + Menu;
+		point_second.y = left_up.y + Menu;
+		line(img, point_first, point_second, Scalar(0, 0, 0), 2, 4);
+		point_first = point_second;
+	}
+
+	// 调整图像窗口的大小以适应实际尺寸
+	namedWindow("ChessBoard", WINDOW_NORMAL);
+	resizeWindow("ChessBoard", imgWidth, imgHeight);
+
+	imshow("ChessBoard", img);
+	waitKey(0);
 }
 
 void Chessboard::printPath(Vector<Position> path) {
