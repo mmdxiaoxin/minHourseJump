@@ -317,44 +317,44 @@ void Chessboard::printJson(Vector<Position> path) {
 * @param path 路径位置列表
 */
 void Chessboard::displayPath(Vector<Position>& path) {
-	const int Size = 15;
-	const int Menu = Size / 2;
+	const int Size = 15;  // 棋盘格子的大小
+	const int Menu = Size / 2;  // 路径线的宽度
 
-	int ROWS = boardSize;
-	int COLS = boardSize;
+	int ROWS = boardSize;  // 棋盘的行数
+	int COLS = boardSize;  // 棋盘的列数
 
 	// 计算图像窗口的大小
 	int imgWidth = COLS * Size;
 	int imgHeight = ROWS * Size;
 
-	Mat img(imgHeight, imgWidth, CV_8UC3, Scalar(255, 255, 255));
+	Mat img(imgHeight, imgWidth, CV_8UC3, Scalar(255, 255, 255));  // 创建图像窗口，背景颜色为白色
 	Point left_up, right_bottom;
 	Point point_first, point_second;
 
-	// 中间路径点--->黄色
+	// 绘制中间路径点，颜色为黄色
 	for (int i = 0; i < path.size(); i++) {
 		left_up.x = path[i].y * Size;
 		left_up.y = path[i].x * Size;
 		right_bottom.x = left_up.x + Size;
 		right_bottom.y = left_up.y + Size;
-		rectangle(img, left_up, right_bottom, Scalar(0, 255, 255), -1, 8, 0); // path yellow(full)
+		rectangle(img, left_up, right_bottom, Scalar(0, 255, 255), -1, 8, 0);
 	}
 
-	// 起点--->蓝色，终点--->红色
+	// 绘制起点，颜色为蓝色，终点，颜色为红色
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLS; j++) {
-			left_up.x = j * Size; // 存储数组的列(j)对应矩形的x轴
+			left_up.x = j * Size;
 			left_up.y = i * Size;
 			right_bottom.x = left_up.x + Size;
 			right_bottom.y = left_up.y + Size;
 			if (i == start.x && j == start.y)
-				rectangle(img, left_up, right_bottom, Scalar(255, 0, 0), -1, 8, 0); // start point blue(full)
+				rectangle(img, left_up, right_bottom, Scalar(255, 0, 0), -1, 8, 0);
 			else if (i == target.x && j == target.y)
-				rectangle(img, left_up, right_bottom, Scalar(0, 0, 255), -1, 8, 0); // goal point red(full)
+				rectangle(img, left_up, right_bottom, Scalar(0, 0, 255), -1, 8, 0);
 		}
 	}
 
-	// 中间线--->黄色
+	// 绘制中间线，颜色为黄色
 	for (int i = 1; i < COLS; i++) {
 		point_first.x = i * Size;
 		point_first.y = 1 * Size;
@@ -370,7 +370,7 @@ void Chessboard::displayPath(Vector<Position>& path) {
 		line(img, point_first, point_second, Scalar(141, 238, 238), 2, 2);
 	}
 
-	// 路径线--->黄色
+	// 绘制路径线，颜色为黄色
 	point_first.x = target.y * Size + Menu;
 	point_first.y = target.x * Size + Menu;
 	for (int i = 0; i < path.size(); i++) {
