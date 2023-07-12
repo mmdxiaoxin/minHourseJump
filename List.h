@@ -3,50 +3,232 @@
 template <typename T>
 class ListNode {
 public:
+	/**
+	 * 节点存储的数据
+	 */
 	T data;
+
+	/**
+	 * 指向前一个节点的指针
+	 */
 	ListNode* prev;
+
+	/**
+	 * 指向后一个节点的指针
+	 */
 	ListNode* next;
 
+	/**
+	 * 构造函数，创建一个节点并初始化数据。
+	 *
+	 * @param val 节点存储的数据
+	 */
 	ListNode(const T& val) : data(val), prev(nullptr), next(nullptr) {}
+
+	/**
+	 * 默认构造函数，创建一个空节点。
+	 */
 	ListNode() : prev(nullptr), next(nullptr) {}
 };
 
 template <typename T>
 class List {
 private:
-	ListNode<T>* head;
-	ListNode<T>* tail;
-	size_t size_;
+	ListNode<T>* head; // 头节点指针
+	ListNode<T>* tail; // 尾节点指针
+	size_t size_; // 链表的大小
 
 public:
+	/**
+	 * 默认构造函数，创建一个空链表。
+	 */
 	List();
+
+	/**
+	 * 构造函数，创建一个指定大小并初始化元素的链表。
+	 *
+	 * @param n 链表的大小
+	 * @param elem 初始化元素的值
+	 */
 	List(size_t n, const T& elem = T());
+
+	/**
+	 * 拷贝构造函数，创建一个与给定链表相同的新链表。
+	 *
+	 * @param other 要拷贝的链表
+	 */
 	List(const List& other);
+
+	/**
+	 * 移动构造函数，创建一个从给定链表移动而来的新链表。
+	 *
+	 * @param other 要移动的链表
+	 */
 	List(List&& other);
+
+	/**
+	 * 构造函数，根据给定范围内的节点创建一个链表。
+	 *
+	 * @param begin 范围的起始节点指针
+	 * @param end 范围的结束节点指针
+	 */
 	List(ListNode<T>* begin, ListNode<T>* end);
+
+	/**
+	 * 析构函数，销毁链表，并释放占用的内存。
+	 */
 	~List();
+
+	/**
+	 * 将当前链表赋值为另一个链表的拷贝。
+	 *
+	 * @param other 要拷贝的链表
+	 * @return 拷贝后的当前链表的引用
+	 */
 	List& operator=(const List& other);
+
+	/**
+	 * 将当前链表赋值为另一个链表的移动。
+	 *
+	 * @param other 要移动的链表
+	 * @return 移动后的当前链表的引用
+	 */
 	List& operator=(List&& other);
+
+	/**
+	 * 获取链表的第一个元素。
+	 *
+	 * @return 链表的第一个元素的引用
+	 */
 	T& front();
+
+	/**
+	 * 获取链表的第一个元素（只读）。
+	 *
+	 * @return 链表的第一个元素的常引用
+	 */
 	const T& front() const;
+
+	/**
+	 * 获取链表的最后一个元素。
+	 *
+	 * @return 链表的最后一个元素的引用
+	 */
 	T& back();
+
+	/**
+	 * 获取链表的最后一个元素（只读）。
+	 *
+	 * @return 链表的最后一个元素的常引用
+	 */
 	const T& back() const;
+
+	/**
+	 * 获取链表的起始节点指针。
+	 *
+	 * @return 链表的起始节点指针
+	 */
 	ListNode<T>* begin();
+
+	/**
+	 * 获取链表的起始节点指针（只读）。
+	 *
+	 * @return 链表的起始节点指针的常引用
+	 */
 	const ListNode<T>* begin() const;
+
+	/**
+	 * 获取链表的结束节点指针。
+	 *
+	 * @return 链表的结束节点指针
+	 */
 	ListNode<T>* end();
+
+	/**
+	 * 在链表的末尾添加一个元素。
+	 *
+	 * @param val 要添加的元素的值
+	 */
 	void push_back(const T& val);
+
+	/**
+	 * 在链表的头部添加一个元素。
+	 *
+	 * @param val 要添加的元素的值
+	 */
 	void push_front(const T& val);
+
+	/**
+	 * 在指定位置插入一个元素。
+	 *
+	 * @param pos 插入位置的节点指针
+	 * @param val 要插入的元素的值
+	 */
 	void insert(ListNode<T>* pos, const T& val);
+
+	/**
+	 * 在指定位置插入多个元素。
+	 *
+	 * @param pos 插入位置的节点指针
+	 * @param n 要插入的元素个数
+	 * @param val 要插入的元素的值
+	 */
 	void insert(ListNode<T>* pos, size_t n, const T& val);
+
+	/**
+	 * 在指定位置插入一个范围内的元素。
+	 *
+	 * @param pos 插入位置的节点指针
+	 * @param begin 范围的起始节点指针
+	 * @param end 范围的结束节点指针
+	 */
 	void insert(ListNode<T>* pos, ListNode<T>* begin, ListNode<T>* end);
+
+	/**
+	 * 移除链表的最后一个元素。
+	 */
 	void pop_back();
+
+	/**
+	 * 移除链表的第一个元素。
+	 */
 	void pop_front();
+
+	/**
+	 * 移除链表中指定范围的元素。
+	 *
+	 * @param begin 范围的起始节点指针
+	 * @param end 范围的结束节点指针
+	 */
 	void erase(ListNode<T>* begin, ListNode<T>* end);
+
+	/**
+	 * 移除链表中与指定值相等的元素。
+	 *
+	 * @param val 要移除的元素的值
+	 */
 	void erase(const T& val);
+
+	/**
+	 * 清空链表，移除所有元素。
+	 */
 	void clear();
+
+	/**
+	 * 获取链表的大小。
+	 *
+	 * @return 链表的大小
+	 */
 	size_t size() const;
+
+	/**
+	 * 检查链表是否为空。
+	 *
+	 * @return 如果链表为空，则返回 true，否则返回 false
+	 */
 	bool empty() const;
 };
+
 
 template <typename T>
 List<T>::List() : head(nullptr), tail(nullptr), size_(0) {}

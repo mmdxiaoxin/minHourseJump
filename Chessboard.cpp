@@ -1,5 +1,5 @@
-﻿#include <fstream>
-#include <iostream>
+﻿#include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <chrono>
 #include <nlohmann/json.hpp>
@@ -13,14 +13,34 @@ using namespace std;
 using namespace cv;
 using json = nlohmann::json;
 
+/**
+* 默认构造函数。设置棋盘大小为200，当前跳数为无穷大。
+*/
 Chessboard::Chessboard() : boardSize(200), currJumps(INT_MAX) {}
 
+/**
+* 构造函数。根据给定的棋盘大小，初始化棋盘和当前跳数。
+*
+* @param boardSize_ 棋盘大小
+*/
 Chessboard::Chessboard(int boardSize_) : boardSize(boardSize_), currJumps(INT_MAX) {}
 
+/**
+* 检查坐标是否在合法的范围内。
+*
+* @param x 横坐标
+* @param y 纵坐标
+* @return 如果坐标在合法范围内，则返回 true，否则返回 false
+*/
 bool Chessboard::isValid(int x, int y) {
 	return (x >= 1 && x <= boardSize && y >= 1 && y <= boardSize);
 }
 
+/**
+* 使用广度优先搜索算法寻找最优路径。
+*
+* @return 最优路径的位置列表
+*/
 Vector<Chessboard::Position> Chessboard::optimalPathBFS() {
 	Vector<Vector<int>> board(boardSize + 1, Vector<int>(boardSize + 1, -1));
 	Vector<Vector<Position>> parent(boardSize + 1, Vector<Position>(boardSize + 1, { -1, -1 }));
@@ -58,12 +78,21 @@ Vector<Chessboard::Position> Chessboard::optimalPathBFS() {
 	return Vector<Position>();
 }
 
-
+/**
+* 使用深度优先搜索算法寻找可行路径。
+*
+* @return 可行路径的位置列表
+*/
 Vector<Chessboard::Position> Chessboard::feasiblePathDFS() {
 	visited = Vector<Vector<bool>>(boardSize + 1, Vector<bool>(boardSize + 1, false));
 	return backtrack(start, currJumps);
 }
 
+/**
+* 使用分支限界法寻找最优路径。
+*
+* @return 最优路径的位置列表
+*/
 Vector<Chessboard::Position> Chessboard::branchBoundPath() {
 	Vector<Vector<int>> board(boardSize + 1, Vector<int>(boardSize + 1, -1));
 	Vector<Vector<Position>> parent(boardSize + 1, Vector<Position>(boardSize + 1, { -1, -1 }));
@@ -134,6 +163,11 @@ Vector<Chessboard::Position> Chessboard::backtrack(Position curr, int jumps) {
 	return Vector<Position>();
 }
 
+/**
+* 使用广度优先搜索算法计算最小跳数。
+*
+* @return 最小跳数
+*/
 int Chessboard::minJumpsBFS() {
 	Queue<pair<Position, int>> q;
 	q.push({ start, 0 });
@@ -203,6 +237,13 @@ void Chessboard::solve() {
 	outputFile.close();
 }
 
+/**
+* 打印棋盘，标记起始位置、目标位置和路径。
+*
+* @param start 起始位置
+* @param target 目标位置
+* @param path 路径位置列表
+*/
 void Chessboard::printChessboard(const Position& start, const Position& target, const Vector<Position>& path) {
 	Vector<Vector<int>> chessboard(boardSize, Vector<int>(boardSize, 0));
 
@@ -242,6 +283,11 @@ void Chessboard::printChessboard(const Position& start, const Position& target, 
 	cout << endl;
 }
 
+/**
+* 打印路径的 JSON 格式。
+*
+* @param path 路径位置列表
+*/
 void Chessboard::printJson(Vector<Position> path) {
 	ofstream outputJson("output.json");
 	if (path.empty()) {
@@ -265,6 +311,11 @@ void Chessboard::printJson(Vector<Position> path) {
 	outputJson.close();
 }
 
+/**
+* 在图像窗口中展示路径。
+*
+* @param path 路径位置列表
+*/
 void Chessboard::displayPath(Vector<Position>& path) {
 	const int Size = 15;
 	const int Menu = Size / 2;
@@ -339,6 +390,11 @@ void Chessboard::displayPath(Vector<Position>& path) {
 	waitKey(0);
 }
 
+/**
+* 打印路径的详细信息，包括跳数和位置坐标。
+*
+* @param path 路径位置列表
+*/
 void Chessboard::printPath(Vector<Position> path) {
 	if (path.empty()) {
 		cout << "没有找到路径." << endl;
