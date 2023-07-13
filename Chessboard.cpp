@@ -197,14 +197,8 @@ int Chessboard::minJumpsBFS() {
 }
 
 void Chessboard::solve() {
-	ifstream inputFile("input.txt");
+	readInputFromFile();
 	ofstream outputFile("output.txt");
-
-	int startX, startY, targetX, targetY;
-	inputFile >> startX >> startY >> targetX >> targetY;
-
-	start = Position(startX, startY);
-	target = Position(targetX, targetY);
 
 	// 测量 optimalPathBFS() 函数的运行时间
 	auto startBFS = chrono::high_resolution_clock::now();
@@ -233,7 +227,6 @@ void Chessboard::solve() {
 	cout << "寻找可行解函数 feasiblePathDFS() 运行时间: " << durationDFS.count() << " 秒" << endl;
 	printPath(path3);
 
-	inputFile.close();
 	outputFile.close();
 }
 
@@ -388,6 +381,25 @@ void Chessboard::displayPath(Vector<Position>& path) {
 
 	imshow("ChessBoard", img);
 	waitKey(0);
+}
+
+/**
+* 在图像窗口中展示路径。
+*/
+void Chessboard::readInputFromFile() {
+	ifstream inputFile("input.txt");
+	if (!inputFile.is_open()) {
+		cout << "无法打开输入文件" << endl;
+		return;
+	}
+
+	// 读取输入数据的逻辑
+	int startX, startY, targetX, targetY;
+	inputFile >> startX >> startY >> targetX >> targetY;
+	start = Position(startX, startY);
+	target = Position(targetX, targetY);
+
+	inputFile.close();
 }
 
 /**

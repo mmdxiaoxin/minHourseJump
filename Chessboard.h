@@ -34,6 +34,7 @@ public:
 	void printPath(Vector<Position> path);
 	void displayPath(Vector<Position>& path);
 	void printJson(Vector<Position> path);
+	void readInputFromFile();
 };
 
 

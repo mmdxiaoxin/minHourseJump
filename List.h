@@ -3,20 +3,9 @@
 template <typename T>
 class ListNode {
 public:
-	/**
-	 * 节点存储的数据
-	 */
-	T data;
-
-	/**
-	 * 指向前一个节点的指针
-	 */
-	ListNode* prev;
-
-	/**
-	 * 指向后一个节点的指针
-	 */
-	ListNode* next;
+	T data; //节点存储的数据
+	ListNode* prev; //指向前一个节点的指针
+	ListNode* next; //指向后一个节点的指针
 
 	/**
 	 * 构造函数，创建一个节点并初始化数据。
