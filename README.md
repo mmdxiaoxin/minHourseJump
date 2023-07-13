@@ -74,8 +74,8 @@ Path: (1, 1) -> (2, 3) -> (3, 5) -> (5, 6) -> (7, 7) -> (8, 5) -> (8, 8)
 
 `output.json` 文件包含最优路径的 JSON 格式。例如：
 
-```
-jsonCopy code{
+```json
+{
   "minJumps": 6,
   "start": { "x": 1, "y": 1 },
   "target": { "x": 8, "y": 8 },
