@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 template<typename T>
 class Vector {
@@ -239,6 +239,13 @@ Vector<T>::Vector(const Vector& other) : data(nullptr), capacity_(other.size_), 
 	}
 }
 
+
+template<typename T>
+Vector<T>::Vector(Vector&& other) : data(other.data), capacity_(other.capacity_), size_(other.size_) {
+	other.data = nullptr;
+	other.capacity_ = 0;
+	other.size_ = 0;
+}
 
 template<typename T>
 Vector<T>::Vector(Vector&& other) : data(other.data), capacity_(other.capacity_), size_(other.size_) {
